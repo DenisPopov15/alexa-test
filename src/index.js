@@ -1,33 +1,38 @@
 'use strict'
-// const alexaHandlers = require('./alexa.js')
 
-// require('dotenv').config()
-// const app = require('express')()
+require('dotenv').config()
 
-// app.post('/', function (req, res) {
-//   res.send(alexaHandlers.handler)
-// })
+const express = require('express')
+const alexa = require('alexa-app')
 
-// app.listen(process.env.PORT, function () {
-//   console.log(`Example app listening on port ${process.env.PORT}!`)
-// })
+const PORT = process.env.PORT
+const app = express()
 
-const Alexa = require('alexa-sdk')
+// ALWAYS setup the alexa app and attach it to express before anything else.
+const alexaApp = new alexa.app('/')
 
-exports.handler = function(event, context, callback) {
-  const alexa = Alexa.handler(event, context)
-  alexa.registerHandlers(handlers)
-  alexa.execute()
-}
+alexaApp.express({
+  expressApp: app,
+  checkCert: false,
+  debug: true
+})
 
-const handlers = {
-    'LaunchRequest': function () {
-        this.emit('SayHello')
-    },
-    'DenisHelloWorldIntent': function () {
-        this.emit('SayHello')
-    },
-    'SayHello': function () {
-        this.emit(':tell', 'Hello World!')
-    }
-}
+// app.set("view engine", "ejs")
+
+alexaApp.launch( (request, response) => {
+  response.say('You launched the app!')
+})
+
+// alexaApp.dictionary = { "names": ["matt", "joe", "bob", "bill", "mary", "jane", "dawn"] }
+
+alexaApp.intent('DenisHelloWorldIntent', {
+    'utterances': ['hello', 'say hello', 'hello world']
+  },
+  (request, response) => {
+    response.say('Hello for You too')
+  }
+)
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`)
+})
