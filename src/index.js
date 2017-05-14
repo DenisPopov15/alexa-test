@@ -5,7 +5,7 @@ require('dotenv').config()
 const app = require('express')()
 
 app.post('/', function (req, res) {
-  res.send(alexaHandlers)
+  res.send(alexaHandlers.handler)
 })
 
 app.listen(process.env.PORT, function () {
